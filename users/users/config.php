@@ -95,8 +95,9 @@ class UsersApiResourceConfig extends ApiResource
 		{
 			require_once JPATH_ADMINISTRATOR.'/components/com_easysocial/includes/foundry.php';
 			$es_params = FD::config();
+			$profiles = FD::model( 'profiles' );
 
-			$cdata['conversations_limit'] = $es_params->get('conversations')->limit;
+			//$cdata['conversations_limit'] = $es_params->get('conversations')->limit;
 			$cdata['activity_limit'] = $es_params->get('activity')->pagination;
 			$cdata['lists_limit'] = $es_params->get('lists')->display->limit;
 			$cdata['comments_limit'] = $es_params->get('comments')->limit;
@@ -106,7 +107,16 @@ class UsersApiResourceConfig extends ApiResource
 			$cdata['emailasusername'] = $es_params->get('registrations')->emailasusername;
 			$cdata['displayName'] = $es_params->get('users')->displayName;
 			$cdata['groups']['enabled'] = $es_params->get('groups')->enabled;
+			$profiles_data = $profiles->getAllProfiles();
 
+			/* Check for profile_type is allowed for Registration by vivek*/
+			$allowed_profile_types = array();
+			foreach ($profiles_data as $key ) {
+				if($key->registration == '1'){
+					array_push($allowed_profile_types, $key);
+				}
+			}
+			$cdata['profile_types'] = $allowed_profile_types;
 		}
 		return $cdata;
 	}
